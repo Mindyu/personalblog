@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>柏链项目学院-专注于IT教育,区块链培训，以太坊Eth培训，以太坊DApp培训，比特币培训，EOS培训，智能合约培训，go区块链培训,fabric联盟链 培训</title>
+    <meta name="keywords" content="IT培训,区块链培训，以太坊培训，以太坊DApp培训，比特币培训，EOS培训，智能合约培训，go区块链培训,fabric联盟链 培训" />
+    <meta name="description" content="柏链项目学院专注于IT培训,区块链培训，以太坊培训，以太坊DApp培训，比特币培训，EOS培训，智能合约培训，go区块链培训,fabric联盟链 培训" />
+    <link rel="icon" href="icon/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="icon/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./bootstrap/css/bootstrap.css">
+</head>
+<body>
+<style>
+     *{
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          box-sizing: border-box;
+     }
+     .layout{
+          width: 1200px;
+          margin: 50px auto;
+     }
+     .list_content{
+           width: 45%;
+           float: left;
+           height: 500px;
+     }
+     .list_content ul {
+
+     }
+     .list_content ul li {
+           height: 30px;
+           line-height: 30px;
+           border-bottom: 1px dashed #ccc;
+           cursor: pointer;
+           padding-left: 5px;
+     }
+     .list_content ul li:hover{
+           background-color:#2aabd2;
+           color: #FFF;
+     }
+     .upload_content {
+         width: 45%;
+         float: left;
+         margin-left: 5%;
+         height: 500px;
+     }
+     .upload_content form {
+             padding-top: 30px;
+     }
+     .upload_content form input:nth-child(1){
+
+     }
+     .upload_content form textarea{
+            margin-top: 20px;
+     }
+     .upload_content form a{
+            margin-top: 20px;
+            padding:5px 40px;
+     }
+    .article {
+          width: 100%;
+    }
+     .article iframe {
+           width: 100%;
+     }
+
+</style>
+<div class="layout">
+<div class="list_content">
+    <h3>博客列表</h3>
+    <ul>
+
+    </ul>
+</div>
+<div class="upload_content">
+    <form action="">
+            <input type="text" placeholder="博客名称" class="form-control" id="title">
+            <textarea name="" id="content" class="form-control" cols="30" rows="10"></textarea>
+            <a href="javascript:;" class="btn btn-success btn-upload">发表</a>
+    </form>
+</div>
+    
+<div class="article">
+    <iframe src="" frameborder="0" id="iframeId"></iframe>
+</div>    
+    
+</div>
+<script src="bootstrap/js/jquery.min.js"></script>
+<script src="./js/artTemplate/template-native.js"></script>
+<script src="./bootstrap/js/bootstrap.min.js"></script>
+<script type="text/tempate" id="listTemplateId">
+        <%for(var i =0;i<Data.length;i++){%>
+            <li data-url="<%=Data[i].FileDir%>"><%=Data[i].Title%></li>
+         <%}%>
+</script>
+<script>
+        $(function(){
+                 function loadData () {
+                          $.ajax({
+                              url:"/lists",
+                              type:"get",
+                              dataType:"json",
+                              success:function(data){
+									if (data.Data != null) {
+										var html = template("listTemplateId",data);
+                                 		$(".list_content ul").html(html);
+									}
+                                  
+                              }
+                          })
+                 }
+                 loadData();
+                 $(".btn-upload").on("click",function(){
+                         var formData = new FormData();
+                         formData.append("content",  document.getElementById("content").value);
+                         formData.append("title",document.getElementById("title").value);
+                            $.ajax({
+                                url: "/publish",
+                                type: "POST",
+                                data: formData,
+                                /**
+                                 *必须false才会自动加上正确的Content-Type
+                                 */
+                                contentType: false,
+                                /**
+                                 * 必须false才会避开jQuery对 formdata 的默认处理
+                                 * XMLHttpRequest会对 formdata 进行正确的处理
+                                 */
+                                processData: false,
+                                dataType:"json",
+                                success: function (data) {
+                                    $(".list_content ul").html("");
+                                    loadData();
+                                },
+                                error: function () {
+                                    alert("发表失败！");
+                                }
+                            });
+
+              });
+                 $(".list_content ul").on("click","li",function(){
+                            var url = this.dataset['url'];
+                            document.getElementById("iframeId").src = url;
+                 });
+        });
+</script>
+</body>
+</html>
